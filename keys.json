@@ -1,0 +1,29 @@
+{
+  "keys": [
+    {
+      "key": "ABC123-DEF456",
+      "used": false,
+      "createdAt": "2026-04-18",
+      "usedAt": null,
+      "usedBy": null
+    },
+    {
+      "key": "TEST-KEY-8888",
+      "used": false,
+      "createdAt": "2026-04-18",
+      "usedAt": null,
+      "usedBy": null
+    }
+  ],
+  "scripts": {
+    "script1": {
+      "name": "示例脚本1",
+      "content": "-- 这是示例脚本1的内容\nprint('Hello World')",
+      "description": "这是一个示例脚本"
+    }
+  },
+  "settings": {
+    "adminPassword": "admin123",
+    "allowReuse": false
+  }
+}
