@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox 代码托管 - Raw 查看</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed #00d4ff;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .upload-area:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #7b2cbf;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .custom-id-section {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .custom-id-input {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            width: 250px;
+            font-size: 1rem;
+        }
+
+        .custom-id-input::placeholder {
+            color: #666;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 30px;
+        }
+
+        .file-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .file-item:hover {
+            border-color: rgba(0, 212, 255, 0.5);
+            transform: translateX(5px);
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .file-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-raw {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #fff;
+        }
+
+        .btn-raw:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-copy:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-delete {
+            background: rgba(255, 71, 87, 0.2);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .btn-delete:hover {
+            background: rgba(255, 71, 87, 0.3);
+        }
+
+        .code-preview {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .code-preview pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #e6edf3;
+        }
+
+        .url-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .url-label {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .url-box {
+            background: #0d1117;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            color: #00d4ff;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .info-box {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #00d4ff;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .file-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .file-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .custom-id-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .custom-id-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 Roblox 代码托管</h1>
+            <p>上传 Lua 脚本，获取 Raw 链接用于 Roblox</p>
+        </header>
+
+        <div class="info-box">
+            💡 提示：上传后点击"复制 Raw 链接"即可在 Roblox 中使用 loadstring(game:HttpGet("链接"))() 执行
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">点击或拖拽文件到此处上传</div>
+                <div class="upload-hint">支持 .lua, .txt, .json 等代码文件</div>
+            </div>
+            <input type="file" id="fileInput" multiple accept=".lua,.txt,.json,.js,.py,.md">
+            
+            <div class="custom-id-section">
+                <input type="text" class="custom-id-input" id="customId" placeholder="自定义ID (可选，如: myscript)">
+                <button class="btn-primary" id="pasteBtn">📋 粘贴代码</button>
+            </div>
+        </div>
+
+        <div class="file-list" id="fileList">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-icon">📭</div>
+                <p>还没有上传任何文件</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">上传的文件将显示在这里</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 文件存储 - 使用 localStorage
+        let uploadedFiles = JSON.parse(localStorage.getItem('robloxCodeFiles') || '[]');
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const emptyState = document.getElementById('emptyState');
+        const customIdInput = document.getElementById('customId');
+        const pasteBtn = document.getElementById('pasteBtn');
+        const toast = document.getElementById('toast');
+
+        // 点击上传
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // 文件选择
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // 粘贴代码按钮
+        pasteBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (!text.trim()) {
+                    showToast('❌ 剪贴板为空');
+                    return;
+                }
+                
+                const fileName = customIdInput.value.trim() || 'pasted-code';
+                const fileId = customIdInput.value.trim() || generateId();
+                
+                const fileData = {
+                    id: fileId,
+                    name: fileName + '.lua',
+                    content: text,
+                    size: text.length,
+                    uploadTime: new Date().toLocaleString()
+                };
+                
+                uploadedFiles.push(fileData);
+                saveFiles();
+                renderFiles();
+                customIdInput.value = '';
+                showToast('✅ 代码粘贴成功！');
+            } catch (err) {
+                showToast('❌ 无法读取剪贴板，请手动粘贴');
+                // 创建临时文本框让用户粘贴
+                const code = prompt('请粘贴你的代码：');
+                if (code && code.trim()) {
+                    const fileName = customIdInput.value.trim() || 'pasted-code';
+                    const fileId = customIdInput.value.trim() || generateId();
+                    
+                    const fileData = {
+                        id: fileId,
+                        name: fileName + '.lua',
+                        content: code,
+                        size: code.length,
+                        uploadTime: new Date().toLocaleString()
+                    };
+                    
+                    uploadedFiles.push(fileData);
+                    saveFiles();
+                    renderFiles();
+                    customIdInput.value = '';
+                    showToast('✅ 代码粘贴成功！');
+                }
+            }
+        });
+
+        // 处理文件
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const customId = customIdInput.value.trim();
+                    const fileData = {
+                        id: customId || generateId(),
+                        name: file.name,
+                        content: e.target.result,
+                        size: file.size,
+                        uploadTime: new Date().toLocaleString()
+                    };
+                    
+                    // 检查ID是否已存在
+                    const existingIndex = uploadedFiles.findIndex(f => f.id === fileData.id);
+                    if (existingIndex !== -1) {
+                        if (confirm(`ID "${fileData.id}" 已存在，是否覆盖？`)) {
+                            uploadedFiles[existingIndex] = fileData;
+                        } else {
+                            return;
+                        }
+                    } else {
+                        uploadedFiles.push(fileData);
+                    }
+                    
+                    saveFiles();
+                    renderFiles();
+                    customIdInput.value = '';
+                    showToast(`✅ ${file.name} 上传成功！`);
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        // 保存到本地存储
+        function saveFiles() {
+            localStorage.setItem('robloxCodeFiles', JSON.stringify(uploadedFiles));
+        }
+
+        // 渲染文件列表
+        function renderFiles() {
+            if (uploadedFiles.length === 0) {
+                emptyState.style.display = 'block';
+                fileList.innerHTML = '';
+                fileList.appendChild(emptyState);
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            fileList.innerHTML = '';
+
+            uploadedFiles.forEach(file => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                // 生成 Raw URL (使用 data URL)
+                const blob = new Blob([file.content], { type: 'text/plain' });
+                const rawUrl = URL.createObjectURL(blob);
+                
+                fileItem.innerHTML = `
+                    <div class="file-header">
+                        <div class="file-name">
+                            <span class="file-icon">📄</span>
+                            ${file.name} <small style="color:#666">(ID: ${file.id})</small>
+                        </div>
+                        <div class="file-actions">
+                            <button class="btn btn-raw" onclick="copyToClipboard('${encodeURIComponent(file.content)}', 'raw')">
+                                🔗 复制 Raw 链接
+                            </button>
+                            <button class="btn btn-copy" onclick="copyToClipboard('${encodeURIComponent(file.content)}', 'code')">
+                                📋 复制执行代码
+                            </button>
+                            <button class="btn btn-raw" onclick="viewRaw('${file.id}')">
+                                👁️ 查看
+                            </button>
+                            <button class="btn btn-delete" onclick="deleteFile('${file.id}')">
+                                🗑️ 删除
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-preview">
+                        <pre>${escapeHtml(file.content.substring(0, 300))}${file.content.length > 300 ? '...' : ''}</pre>
+                    </div>
+                    <div class="url-section">
+                        <div class="url-label">Roblox 执行代码：</div>
+                        <div class="url-box">loadstring(game:HttpGet("${rawUrl}"))()</div>
+                    </div>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        // 复制到剪贴板
+        window.copyToClipboard = function(encodedContent, type) {
+            const content = decodeURIComponent(encodedContent);
+            
+            if (type === 'raw') {
+                // 创建 Blob URL
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                
+                navigator.clipboard.writeText(url).then(() => {
+                    showToast('✅ Raw 链接已复制！');
+                }).catch(() => {
+                    // 降级方案
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showToast('✅ Raw 链接已复制！');
+                });
+            } else {
+                // 复制执行代码
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const code = `loadstring(game:HttpGet("${url}"))()`;
+                
+                navigator.clipboard.writeText(code).then(() => {
+                    showToast('✅ 执行代码已复制！');
+                }).catch(() => {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = code;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showToast('✅ 执行代码已复制！');
+                });
+            }
+        };
+
+        // 查看 Raw
+        window.viewRaw = function(fileId) {
+            const file = uploadedFiles.find(f => f.id === fileId);
+            if (!file) return;
+
+            const blob = new Blob([file.content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        };
+
+        // 删除文件
+        window.deleteFile = function(fileId) {
+            if (confirm('确定要删除这个文件吗？')) {
+                uploadedFiles = uploadedFiles.filter(f => f.id !== fileId);
+                saveFiles();
+                renderFiles();
+                showToast('🗑️ 文件已删除');
+            }
+        };
+
+        // 生成唯一 ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        }
+
+        // HTML 转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 显示提示
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 初始化
+        renderFiles();
+    </script>
+</body>
+</html>
