@@ -546,9 +546,9 @@ let keyData = {
   keys: [],
   scripts: {
     "default": {
-      name: "默认脚本",
-      content: "-- 欢迎使用卡密系统\n-- 请在管理后台添加脚本内容",
-      description: "默认脚本"
+      name: "Roblox 示例脚本",
+      content: "-- Roblox 示例脚本\n-- 欢迎使用卡密系统\n\nlocal player = game.Players.LocalPlayer\nlocal character = player.Character or player.CharacterAdded:Wait()\n\n-- 示例功能：打印玩家信息\nprint('玩家名称: ' .. player.Name)\nprint('用户ID: ' .. player.UserId)\n\n-- 示例功能：发送通知\ngame.StarterGui:SetCore('SendNotification', {\n    Title = '卡密系统',\n    Text = '脚本加载成功！',\n    Duration = 5\n})",
+      description: "Roblox Lua 示例脚本"
     }
   },
   settings: {
