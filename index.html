@@ -205,6 +205,37 @@
     word-wrap: break-word;
   }
 
+  .script-box pre .keyword { color: #ff79c6; }
+  .script-box pre .function { color: #8be9fd; }
+  .script-box pre .string { color: #f1fa8c; }
+  .script-box pre .comment { color: #6272a4; }
+  .script-box pre .number { color: #bd93f9; }
+
+  .execution-tip {
+    background: rgba(255, 175, 0, 0.1);
+    border: 1px solid rgba(255, 175, 0, 0.3);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    color: #ffaf00;
+    font-size: 13px;
+  }
+
+  .execution-tip strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .execution-tip ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .execution-tip li {
+    margin-bottom: 5px;
+  }
+
   .loading {
     display: none;
     text-align: center;
@@ -255,9 +286,18 @@
 
   <!-- 脚本内容显示区域 -->
   <div class="script-content" id="scriptContent">
+    <div class="execution-tip">
+      <strong>🎮 Roblox 脚本执行方法：</strong>
+      <ol>
+        <li>点击"复制脚本"按钮复制代码</li>
+        <li>打开 Roblox 游戏</li>
+        <li>使用支持的执行器（如 Synapse X, KRNL, Fluxus 等）</li>
+        <li>粘贴脚本并执行</li>
+      </ol>
+    </div>
     <div class="script-header">
-      <h3>📝 脚本内容</h3>
-      <button class="copy-btn" onclick="copyScript()">复制脚本</button>
+      <h3>📝 脚本内容 (Lua)</h3>
+      <button class="copy-btn" onclick="copyScript()">📋 复制脚本</button>
     </div>
     <div class="script-box">
       <pre id="scriptText"></pre>
@@ -287,9 +327,9 @@ async function loadKeyData() {
     keys: [],
     scripts: {
       "default": {
-        name: "默认脚本",
-        content: "-- 欢迎使用卡密系统\n-- 请在管理后台添加脚本内容",
-        description: "默认脚本"
+        name: "Roblox 示例脚本",
+        content: "-- Roblox 示例脚本\n-- 欢迎使用卡密系统\n\nlocal player = game.Players.LocalPlayer\nlocal character = player.Character or player.CharacterAdded:Wait()\n\n-- 示例功能：打印玩家信息\nprint('玩家名称: ' .. player.Name)\nprint('用户ID: ' .. player.UserId)\n\n-- 示例功能：发送通知\ngame.StarterGui:SetCore('SendNotification', {\n    Title = '卡密系统',\n    Text = '脚本加载成功！',\n    Duration = 5\n})",
+        description: "Roblox Lua 示例脚本"
       }
     },
     settings: {
@@ -353,7 +393,7 @@ async function verifyKey() {
 
   // 获取脚本内容
   const script = keyData.scripts[keyObj.scriptId || 'default'] || keyData.scripts['default'];
-  scriptText.textContent = script.content;
+  scriptText.innerHTML = highlightLua(script.content);
   scriptContent.classList.add('show');
 }
 
@@ -383,6 +423,36 @@ document.getElementById('keyInput').addEventListener('keypress', function(e) {
     verifyKey();
   }
 });
+
+// Lua 语法高亮
+function highlightLua(code) {
+  if (!code) return '';
+
+  // 转义 HTML
+  code = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // 高亮注释
+  code = code.replace(/(--.*$)/gm, '<span class="comment">$1</span>');
+
+  // 高亮字符串
+  code = code.replace(/(".*?")/g, '<span class="string">$1</span>');
+  code = code.replace(/('.*?')/g, '<span class="string">$1</span>');
+
+  // 高亮关键字
+  const keywords = ['local', 'function', 'end', 'if', 'then', 'else', 'elseif', 'for', 'while', 'do', 'return', 'break', 'continue', 'in', 'not', 'and', 'or', 'true', 'false', 'nil', 'repeat', 'until'];
+  keywords.forEach(kw => {
+    const regex = new RegExp(`\\b(${kw})\\b`, 'g');
+    code = code.replace(regex, '<span class="keyword">$1</span>');
+  });
+
+  // 高亮函数调用
+  code = code.replace(/(\w+)(\s*\()/g, '<span class="function">$1</span>$2');
+
+  // 高亮数字
+  code = code.replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+
+  return code;
+}
 
 // 页面加载时初始化
 loadKeyData();
