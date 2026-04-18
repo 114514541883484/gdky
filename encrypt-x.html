@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Encrypt X - Obfuscator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+
+    background:
+      radial-gradient(circle at center, rgba(0,0,0,0.75) 0%, rgba(2,6,23,0.95) 100%),
+      url("https://raw.githubusercontent.com/ScriptObfuscator2/Website/refs/heads/main/Dark%20Theme%20With%20Light%20Bulb.jpeg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    font-family: "Courier New", monospace;
+    color: #e2e8f0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .container {
+    width: min(90%, 600px);
+    background: rgba(15, 23, 42, 0.85);
+    border: 2px solid #334155;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 18px;
+    color: #ef4444;
+    margin-bottom: 20px;
+  }
+
+  textarea {
+    width: 90%;
+    height: 200px;
+    background: rgba(2,6,23,0.9);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 12px;
+    color: #e2e8f0;
+    font-size: 13px;
+
+    resize: none;
+    outline: none;
+
+    /* 🔥 ADD THESE */
+    overflow: auto;
+    white-space: pre;      /* prevents wrapping */
+  }
+
+  .switch-container {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    color: #cbd5f5;
+  }
+
+  .switch {
+    position: relative;
+    width: 40px;
+    height: 20px;
+  }
+
+  .switch input {
+    display: none;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #334155;
+    border-radius: 20px;
+    transition: 0.3s;
+  }
+
+  .slider:before {
+    content: "";
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    top: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+  }
+
+  input:checked + .slider {
+    background-color: #ef4444;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(20px);
+  }
+
+  .key-input {
+    margin-top: 10px;
+    display: none;
+  }
+
+  .key-input input {
+    width: 90%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: rgba(2,6,23,0.9);
+    color: #e2e8f0;
+    outline: none;
+    font-size: 13px;
+  }
+
+  button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 12px;
+    background: #ef4444;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    background: #dc2626;
+  }
+
+  .footer {
+    margin-top: 11px;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+
+  .date {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    color: #64748b;
+    pointer-events: none;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Encrypt X Obfuscator</h1>
+
+  <!-- ✅ FIXED: added id -->
+  <textarea id="scriptBox" placeholder="Paste your script here..."></textarea>
+
+  <div class="switch-container">
+    <label class="switch">
+      <input type="checkbox" id="keyToggle" onchange="toggleKeyBox()">
+      <span class="slider"></span>
+    </label>
+    <span>Key (Enable Access)</span>
+  </div>
+
+  <div class="key-input" id="keyBox">
+    <!-- ✅ FIXED: added id -->
+    <input type="text" id="keyInput" maxlength="32" placeholder="Enter your access key...">
+  </div>
+
+  <button onclick="obfuscate()">
+    Obfuscate
+  </button>
+
+  <div class="footer">
+    Secure script with Encrypt X Engine
+  </div>
+
+</div>
+
+<div class="date">
+  Published: March 27, 2026
+</div>
+
+<script>
+function toggleKeyBox() {
+  const toggle = document.getElementById("keyToggle");
+  const box = document.getElementById("keyBox");
+  box.style.display = toggle.checked ? "block" : "none";
+}
+
+async function obfuscate() {
+  const script = document.getElementById("scriptBox");
+  const key = document.getElementById("keyInput");
+  const button = document.querySelector("button");
+  const toggle = document.getElementById("keyToggle");
+  
+  console.log("Script:", script.value);
+  console.log("Key:", key.value);
+
+  if (!script.value) {
+    alert("Script is empty");
+    return;
+  }
+
+  if (document.getElementById("keyToggle").checked && !key.value) {
+    alert("Key is required");
+    return;
+  }
+
+  if (!document.getElementById("keyToggle").checked) {
+    key.value = "";
+  }
+
+  // 🔒 DISABLE ALL INPUTS
+  scriptBox.disabled = true;
+  keyInput.disabled = true;
+  button.disabled = true;
+  toggle.disabled = true;
+  
+  try {
+    const res = await fetch("https://encrypt-x.scriptobfuscator2.workers.dev/obfuscate" + "?auth=" + key.value, {
+      method: "POST",
+      headers: {
+       "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        script: script.value
+      })
+    });
+    const txt = await res.text();
+    script.value = txt;
+    key.value = "";
+  } catch (err) {
+    alert(err);
+  }
+  
+
+  // 🔒 ENABLE ALL INPUTS
+  scriptBox.disabled = false;
+  keyInput.disabled = false;
+  button.disabled = false;
+  toggle.disabled = false;
+}
+
+const keyInput = document.getElementById("keyInput");
+keyInput.addEventListener("input", () => {
+  keyInput.value = keyInput.value.replace(/[^a-zA-Z0-9]/g, "");
+});
+  
+</script>
+
+</body>
+</html>
